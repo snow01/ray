@@ -1,5 +1,15 @@
 #!/bin/bash
 
+py_env=""
+while getopts p: flag
+do
+  case "${flag}" in
+      p) py_env=${OPTARG};;
+      *) echo "Invalid arg"
+         exit 1
+  esac
+done
+
 set -x
 
 # Cause the script to exit if a single command fails.
@@ -12,6 +22,11 @@ EOF
 chmod +x /usr/bin/nproc
 
 NODE_VERSION="14"
+PYTHONS_SHORT=("cp36"
+         "cp37"
+         "cp38"
+         "cp39"
+         "cp310")
 PYTHONS=("cp36-cp36m"
          "cp37-cp37m"
          "cp38-cp38"
@@ -55,6 +70,7 @@ fi
 
 # Install and use the latest version of Node.js in order to build the dashboard.
 set +x
+
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash
 source "$HOME"/.nvm/nvm.sh
 nvm install "$NODE_VERSION"
@@ -63,7 +79,6 @@ nvm use "$NODE_VERSION"
 # Build the dashboard so its static assets can be included in the wheel.
 # TODO(mfitton): switch this back when deleting old dashboard code.
 pushd python/ray/dashboard/client
-  rm -rf node_modules
   npm ci
   npm run build
 popd
@@ -71,8 +86,15 @@ set -x
 
 mkdir -p .whl
 for ((i=0; i<${#PYTHONS[@]}; ++i)); do
+  PYTHON_SHORT=${PYTHONS_SHORT[i]}
   PYTHON=${PYTHONS[i]}
   NUMPY_VERSION=${NUMPY_VERSIONS[i]}
+
+  if [ -n "$py_env" ]; then
+    if [ "$py_env" != "$PYTHON_SHORT" ]; then
+      continue
+    fi
+  fi
 
   # The -f flag is passed twice to also run git clean in the arrow subdirectory.
   # The -d flag removes directories. The -x flag ignores the .gitignore file,
