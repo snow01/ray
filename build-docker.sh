@@ -16,7 +16,6 @@ while [[ $# -gt 0 ]]; do
   case $key in
   --gpu)
     GPU="-gpu"
-    BASE_IMAGE_TAG="nightly-gpu"
     BASE_IMAGE="nvidia/cuda:11.2.0-cudnn8-devel-ubuntu18.04"
     ;;
   --base-image)
@@ -59,6 +58,7 @@ while [[ $# -gt 0 ]]; do
   shift
 done
 
+BASE_IMAGE_TAG="nightly-$PYTHON_VERSION$GPU"
 WHEEL_DIR=$(mktemp -d)
 wget --quiet "$WHEEL_URL" -P "$WHEEL_DIR"
 WHEEL="$WHEEL_DIR/$(basename "$WHEEL_DIR"/*.whl)"
