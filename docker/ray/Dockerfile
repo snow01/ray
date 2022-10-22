@@ -1,5 +1,5 @@
-ARG IMAGE_TAG="nightly"
-FROM rayproject/ray-deps:$IMAGE_TAG
+ARG BASE_IMAGE_TAG="nightly"
+FROM rayproject/ray-deps:$BASE_IMAGE_TAG
 ARG WHEEL_PATH
 ARG FIND_LINKS_PATH=".whl"
 # For Click

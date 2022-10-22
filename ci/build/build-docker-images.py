@@ -197,20 +197,17 @@ def _build_docker_image(
         print(f"{image_name} image is currently unsupported with " "Python 3.9/3.10")
         return
 
-    build_args = {}
-    build_args["PYTHON_VERSION"] = PY_MATRIX[py_version]
     # I.e. "py310"[3:] == 10
-    build_args["PYTHON_MINOR_VERSION"] = py_version[3:]
+    build_args = {"PYTHON_VERSION": PY_MATRIX[py_version], "PYTHON_MINOR_VERSION": py_version[3:]}
 
     device_tag = f"{image_type}"
+    image_tag = f"nightly-{py_version}-{device_tag}"
 
     if image_name == "base-deps":
-        base_image = BASE_IMAGES[image_type]
-    else:
-        base_image = f"-{py_version}-{device_tag}"
+        build_args["BASE_IMAGE"] = BASE_IMAGES[image_type]
 
-    if image_name != "ray-worker-container":
-        build_args["BASE_IMAGE"] = base_image
+    if image_name not in ["base-deps",  "ray-worker-container"]:
+        build_args["BASE_IMAGE-TAG"] = image_tag
 
     if image_name in ["ray", "ray-deps", "ray-worker-container"]:
         wheel = _get_wheel_name(build_args["PYTHON_MINOR_VERSION"])
@@ -219,7 +216,7 @@ def _build_docker_image(
         # can be found.
         build_args["FIND_LINKS_PATH"] = ".whl"
 
-    tagged_name = f"rayproject/{image_name}:nightly-{py_version}-{device_tag}"
+    tagged_name = f"rayproject/{image_name}:{image_tag}"
 
     for i in range(2):
         cleanup = DOCKER_CLIENT.containers.prune().get("SpaceReclaimed")

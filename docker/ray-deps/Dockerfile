@@ -1,5 +1,5 @@
-ARG IMAGE_TAG="nightly"
-FROM rayproject/base-deps:$IMAGE_TAG
+ARG BASE_IMAGE_TAG="nightly"
+FROM rayproject/base-deps:$BASE_IMAGE_TAG
 # If this arg is not "autoscaler" then no autoscaler requirements will be included
 ARG AUTOSCALER="autoscaler"
 ARG WHEEL_PATH
