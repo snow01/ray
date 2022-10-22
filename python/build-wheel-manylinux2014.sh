@@ -68,7 +68,7 @@ export JAVA_HOME="$java_home"
 echo "build --incompatible_linkopts_to_linklibs" >> /root/.bazelrc
 
 if [[ -n "${RAY_INSTALL_JAVA:-}" ]]; then
-  bazel build //java:ray_java_pkg
+  /root/bin/bazel build //java:ray_java_pkg
   unset RAY_INSTALL_JAVA
 fi
 
