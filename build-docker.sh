@@ -6,6 +6,7 @@
 set -x
 
 GPU=""
+IMAGE_TAG="nightly"
 BASE_IMAGE="ubuntu:focal"
 WHEEL_URL="https://s3-us-west-2.amazonaws.com/ray-wheels/latest/ray-3.0.0.dev0-cp37-cp37m-manylinux2014_x86_64.whl"
 PYTHON_VERSION="3.7.7"
@@ -17,6 +18,7 @@ key="$1"
 case $key in
     --gpu)
     GPU="-gpu"
+    IMAGE_TAG="nightly-gpu"
     BASE_IMAGE="nvidia/cuda:11.2.0-cudnn8-devel-ubuntu18.04"
     ;;
     --base-image)
@@ -62,14 +64,14 @@ WHEEL_DIR=$(mktemp -d)
 wget --quiet "$WHEEL_URL" -P "$WHEEL_DIR"
 WHEEL="$WHEEL_DIR/$(basename "$WHEEL_DIR"/*.whl)"
 # Build base-deps, ray-deps, and ray.
-for IMAGE in "base-deps" "ray-deps" "ray"
+for IMAGE in "base-deps" "ray-deps" "ray" "ray-ml" "examples"
 do
     cp "$WHEEL" "docker/$IMAGE/$(basename "$WHEEL")"
     if [ $OUTPUT_SHA ]; then
-        IMAGE_SHA=$(docker build $NO_CACHE --build-arg GPU="$GPU" --build-arg BASE_IMAGE="$BASE_IMAGE" --build-arg WHEEL_PATH="$(basename "$WHEEL")" --build-arg PYTHON_VERSION="$PYTHON_VERSION" -q -t rayproject/$IMAGE:nightly$GPU docker/$IMAGE)
-        echo "rayproject/$IMAGE:nightly$GPU SHA:$IMAGE_SHA"
+        IMAGE_SHA=$(docker build $NO_CACHE --build-arg GPU="$GPU" --build-arg BASE_IMAGE="$BASE_IMAGE" --build-arg IMAGE_TAG="$IMAGE_TAG" --build-arg WHEEL_PATH="$(basename "$WHEEL")" --build-arg PYTHON_VERSION="$PYTHON_VERSION" -q -t rayproject/$IMAGE:$IMAGE_TAG docker/$IMAGE)
+        echo "rayproject/$IMAGE:nightly$IMAGE_TAG SHA:$IMAGE_SHA"
     else
-        docker build $NO_CACHE  --build-arg GPU="$GPU" --build-arg BASE_IMAGE="$BASE_IMAGE" --build-arg WHEEL_PATH="$(basename "$WHEEL")" --build-arg PYTHON_VERSION="$PYTHON_VERSION" -t rayproject/$IMAGE:nightly$GPU docker/$IMAGE
+        docker build $NO_CACHE  --build-arg GPU="$GPU" --build-arg BASE_IMAGE="$BASE_IMAGE" --build-arg IMAGE_TAG="$IMAGE_TAG" --build-arg WHEEL_PATH="$(basename "$WHEEL")" --build-arg PYTHON_VERSION="$PYTHON_VERSION" -t rayproject/$IMAGE:$IMAGE_TAG docker/$IMAGE
     fi
     rm "docker/$IMAGE/$(basename "$WHEEL")"
 done 

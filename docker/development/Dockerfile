@@ -1,7 +1,7 @@
 # The development Docker image build a self-contained Ray instance suitable
 # for developers that need the source code to actively modify.
-
-FROM rayproject/ray-deps:latest
+ARG IMAGE_TAG="latest"
+FROM rayproject/ray-deps:$IMAGE_TAG
 ADD ray.tar /ray
 ADD git-rev /ray/git-rev
 # Install dependencies needed to build ray

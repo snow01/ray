@@ -1,0 +1,1 @@
+docker run -e TRAVIS_COMMIT="$(git log --format="%H" -n 1)" -w /ray -v "$(pwd)":/ray -ti quay.io/pypa/manylinux2014_x86_64 /ray/python/build-wheel-manylinux2014.sh

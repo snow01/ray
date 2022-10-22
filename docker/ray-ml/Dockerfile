@@ -1,5 +1,5 @@
-ARG BASE_IMAGE
-FROM rayproject/ray:nightly"$BASE_IMAGE"
+ARG IMAGE_TAG="nightly"
+FROM rayproject/ray:$IMAGE_TAG
 ARG PYTHON_MINOR_VERSION=7
 
 # We have to uninstall wrapt this way for Tensorflow compatibility
