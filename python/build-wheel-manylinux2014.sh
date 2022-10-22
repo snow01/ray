@@ -10,6 +10,10 @@ do
   esac
 done
 
+if [ -n "$py_env" ]; then
+  echo "Building wheel only for $py_env"
+fi
+
 set -x
 
 # Cause the script to exit if a single command fails.
@@ -92,6 +96,7 @@ for ((i=0; i<${#PYTHONS[@]}; ++i)); do
 
   if [ -n "$py_env" ]; then
     if [ "$py_env" != "$PYTHON_SHORT" ]; then
+      echo "Skipping building wheel for $PYTHON_SHORT"
       continue
     fi
   fi
