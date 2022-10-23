@@ -83,7 +83,12 @@ for IMAGE in "ray-ml"; do
   cp "$WHEEL" "docker/$IMAGE/$(basename "$WHEEL")"
   if [ "$IMAGE" == "ray-ml" ]; then
     cp "python/requirements.txt" "docker/$IMAGE/"
-    cp "python/requirements/ml/*" "docker/$IMAGE/"
+    cp "python/requirements/ml/requirements_dl.txt" "docker/$IMAGE/"
+    cp "python/requirements/ml/requirements_ml_docker.txt" "docker/$IMAGE/"
+    cp "python/requirements/ml/requirements_rllib.txt" "docker/$IMAGE/"
+    cp "python/requirements/ml/requirements_tune.txt" "docker/$IMAGE/"
+    cp "python/requirements/ml/requirements_train.txt" "docker/$IMAGE/"
+    cp "python/requirements/ml/requirements_upstream.txt" "docker/$IMAGE/"
   fi
 
   if [ "$OUTPUT_SHA" == "YES" ]; then
