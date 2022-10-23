@@ -70,7 +70,7 @@ for IMAGE in "base-deps" "ray-deps" "ray" "ray-ml"; do
 
   if [ "$IMAGE" == "base-deps" ]; then
     BUILD_ARGS="$BUILD_ARGS --build-arg BASE_IMAGE=$BASE_IMAGE --build-arg PYTHON_VERSION=$PYTHON_VERSION"
-  elif [ "$IMAGE" != "base-deps" ]; then
+  else
     BUILD_ARGS="$BUILD_ARGS --build-arg BASE_IMAGE_TAG=$BASE_IMAGE_TAG --build-arg WHEEL_PATH=$(basename "$WHEEL")"
   fi
 
