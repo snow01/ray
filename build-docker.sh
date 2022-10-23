@@ -65,7 +65,7 @@ WHEEL=".whl/ray-3.0.0.dev0-cp38-cp38-manylinux2014_x86_64.whl"
 # Build base-deps, ray-deps, and ray.
 for IMAGE in "base-deps" "ray-deps" "ray" "ray-ml"; do
   echo "=================================================>"
-  echo "==== BUILDING $IMAGE ===="
+  echo "==== BUILDING rayproject/$IMAGE:$BASE_IMAGE_TAG ===="
   # BASE_IMAGE arg doesn't matter for any except except base-deps
   #--build-arg GPU="$GPU"
   BUILD_ARGS="$NO_CACHE"
