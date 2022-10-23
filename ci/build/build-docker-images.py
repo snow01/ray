@@ -207,7 +207,7 @@ def _build_docker_image(
         build_args["BASE_IMAGE"] = BASE_IMAGES[image_type]
 
     if image_name not in ["base-deps",  "ray-worker-container"]:
-        build_args["BASE_IMAGE-TAG"] = image_tag
+        build_args["BASE_IMAGE_TAG"] = image_tag
 
     if image_name in ["ray", "ray-deps", "ray-worker-container"]:
         wheel = _get_wheel_name(build_args["PYTHON_MINOR_VERSION"])
