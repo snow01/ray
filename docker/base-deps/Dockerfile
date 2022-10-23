@@ -31,12 +31,9 @@ RUN set -eux; \
             g++  \
             zlib1g-dev \
             libsasl2-modules-sql \
-            $(if [ "$AUTOSCALER" = "autoscaler" ]; then echo \
-            tmux  \
-            screen  \
-            rsync  \
-            openssh-client  \
-            gnupg fi);\
+            $(if [ "$AUTOSCALER" = "autoscaler" ]; then  \
+              echo tmux screen rsync openssh-client gnupg  \
+            fi;);\
     rm -rf /var/lib/apt/lists/*; \
     apt-get clean
 

@@ -64,6 +64,8 @@ BASE_IMAGE_TAG="nightly-$PYTHON_VERSION$GPU"
 WHEEL=".whl/ray-3.0.0.dev0-cp38-cp38-manylinux2014_x86_64.whl"
 # Build base-deps, ray-deps, and ray.
 for IMAGE in "base-deps" "ray-deps" "ray" "ray-ml"; do
+  echo "=================================================>"
+  echo "==== BUILDING $IMAGE ===="
   # BASE_IMAGE arg doesn't matter for any except except base-deps
   #--build-arg GPU="$GPU"
   BUILD_ARGS="$NO_CACHE"
@@ -82,6 +84,7 @@ for IMAGE in "base-deps" "ray-deps" "ray" "ray-ml"; do
     docker build $BUILD_ARGS -t rayproject/$IMAGE:$BASE_IMAGE_TAG docker/$IMAGE
   fi
   rm "docker/$IMAGE/$(basename "$WHEEL")"
+  echo "<================================================="
 done
 
 # Build the current Ray source
