@@ -33,9 +33,7 @@ RUN set -eux; \
             libsasl2-modules-sql \
             $(if [ "$AUTOSCALER" = "autoscaler" ]; then  \
               echo tmux screen rsync openssh-client gnupg;  \
-            fi;);\
-    rm -rf /var/lib/apt/lists/*; \
-    apt-get clean
+            fi;)\
 
 # create a non sudo 'ray' user
 ARG RAY_UID=1000
@@ -53,7 +51,7 @@ USER $RAY_UID
 ENV CONDA_DIR $HOME/anaconda3
 ARG CONDA_URL="https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh"
 RUN set -eux; \
-    wget --no-check-certificate -quiet CONDA_URL -O /tmp/miniconda.sh; \
+    wget --no-check-certificate --quiet CONDA_URL -O /tmp/miniconda.sh; \
     /bin/bash /tmp/miniconda.sh -b -u -p $CONDA_DIR
 
 # initialise conda

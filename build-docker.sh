@@ -3,7 +3,7 @@
 # base-deps, ray-deps, or ray images. This script is *not* tested, so please look at the
 # scripts/build-docker-images.py if there are problems with using this script.
 
-set -x
+set -Eeuo pipefail
 
 GPU=""
 BASE_IMAGE="ubuntu:focal"
