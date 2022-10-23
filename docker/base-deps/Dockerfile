@@ -86,7 +86,9 @@ RUN set -eux; \
     # We install cmake temporarily to get psutil
     sudo apt-get autoremove -y cmake zlib1g-dev \
         # We keep g++ on GPU images, because uninstalling removes CUDA Devel tooling
-        $(if [ "$BASE_IMAGE" = "ubuntu:focal" ]; then echo g++; fi)
+        $(if [ "$BASE_IMAGE" = "ubuntu:focal" ]; then  \
+          echo g++  \
+        fi;)
 
 # Either install kubectl or remove wget
 RUN set -eux; \
@@ -95,9 +97,9 @@ RUN set -eux; \
         sudo touch /etc/apt/sources.list.d/kubernetes.list; \
         echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list; \
         sudo apt-get update; \
-        sudo apt-get install kubectl; \
+        sudo apt-get install kubectl \
     else  \
-      sudo apt-get autoremove -y wget; \
+      sudo apt-get autoremove -y wget \
     fi;)
 
 # clean

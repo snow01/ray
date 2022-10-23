@@ -9,6 +9,9 @@ ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
 COPY $WHEEL_PATH .
 COPY $FIND_LINKS_PATH $FIND_LINKS_PATH
+
+RUN set -eux; $PYTHON --version
+
 RUN set -eux; \
     $PIP --no-cache-dir install --find-links $FIND_LINKS_PATH \
     $(basename $WHEEL_PATH)[all] \
@@ -24,8 +27,11 @@ RUN set -eux; \
         "azure-mgmt-compute==23.1.0" \
         "azure-mgmt-network==19.0.0" \
         "azure-mgmt-resource==20.0.0" \
-        "msrestazure==0.6.4"; fi) \
-    $(if [ $($PYTHON -c "import sys; print(sys.version_info.minor)") != 6 ] \
-        && [ "$AUTOSCALER" = "autoscaler" ]; then echo "kopf"; fi); \
+        "msrestazure==0.6.4"  \
+    fi;); \
+    $(if [ $($PYTHON -c "import sys; print(sys.version_info.minor)") != 6 ] && [ "$AUTOSCALER" = "autoscaler" ]; then  \
+      echo "kopf"  \
+    fi;)
+RUN set -eux; \
     $PIP uninstall ray -y; \
     sudo rm $(basename $WHEEL_PATH)
