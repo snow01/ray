@@ -66,7 +66,8 @@ BASE_IMAGE_TAG="nightly-$PYTHON_VERSION$GPU"
 #WHEEL="$WHEEL_DIR/$(basename "$WHEEL_DIR"/*.whl)"
 WHEEL=".whl/ray-3.0.0.dev0-cp38-cp38-manylinux2014_x86_64.whl"
 # Build base-deps, ray-deps, and ray.
-for IMAGE in "base-deps" "ray-deps" "ray" "ray-ml"; do
+# "base-deps" "ray-deps" "ray"
+for IMAGE in "ray-ml"; do
   echo "=================================================>"
   echo "==== BUILDING rayproject/$IMAGE:$BASE_IMAGE_TAG ===="
   # BASE_IMAGE arg doesn't matter for any except except base-deps
