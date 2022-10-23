@@ -1,6 +1,5 @@
 ARG BASE_IMAGE_TAG="nightly"
 FROM rayproject/ray:$BASE_IMAGE_TAG
-ARG PYTHON_MINOR_VERSION=7
 
 # We have to uninstall wrapt this way for Tensorflow compatibility
 COPY requirements.txt ./
@@ -14,34 +13,32 @@ COPY requirements_upstream.txt ./
 RUN sudo apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/3bf863cc.pub
 RUN sudo apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64/7fa2af80.pub
 
-RUN sudo apt-get update \
-    && sudo apt-get install -y gcc \
+RUN sudo apt-get update; \
+    sudo apt-get install -y gcc \
         cmake \
         libgtk2.0-dev \
         zlib1g-dev \
         libgl1-mesa-dev \
         unzip \
-        unrar \
-    && $HOME/anaconda3/bin/pip --no-cache-dir install -U pip \
+        unrar; \
+    $PIP --no-cache-dir install -U pip; \
     # First, install requirements
-    && $HOME/anaconda3/bin/pip --no-cache-dir install -U \
-           -r requirements.txt \
+    $PIP --no-cache-dir install -U -r requirements.txt; \
     # Then, keep requirements bounds as constraints and install remaining test dependencies
-    && $HOME/anaconda3/bin/pip --use-deprecated=legacy-resolver --no-cache-dir install -U \
+    $PIP --use-deprecated=legacy-resolver --no-cache-dir install -U \
            -c requirements.txt \
            -r requirements_rllib.txt \
            -r requirements_train.txt \
            -r requirements_tune.txt \
-           -r requirements_upstream.txt \
+           -r requirements_upstream.txt; \
     # explicitly install (overwrite) pytorch with CUDA support
-    && $HOME/anaconda3/bin/pip --no-cache-dir install -U \
-           -r requirements_ml_docker.txt \
+    $PIP --no-cache-dir install -U -r requirements_ml_docker.txt; \
     # Remove dataclasses & typing because they are included in Python > 3.6
-    && if [ $(python -c 'import sys; print(sys.version_info.minor)') != "6" ]; then \
-        $HOME/anaconda3/bin/pip uninstall dataclasses typing -y; fi  \
-    && sudo rm \
-        requirements*.txt \
-    && sudo apt-get clean
+    if [ $(python -c 'import sys; print(sys.version_info.minor)') != "6" ]; then \
+        $PIP uninstall dataclasses typing -y;  \
+    fi;  \
+    sudo rm requirements*.txt; \
+    sudo apt-get clean
 
 # Make sure tfp is installed correctly and matches tf version.
 RUN python -c "import tensorflow_probability"
