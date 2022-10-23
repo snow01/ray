@@ -32,7 +32,7 @@ RUN set -eux; \
             zlib1g-dev \
             libsasl2-modules-sql \
             $(if [ "$AUTOSCALER" = "autoscaler" ]; then  \
-              echo tmux screen rsync openssh-client gnupg  \
+              echo tmux screen rsync openssh-client gnupg;  \
             fi;);\
     rm -rf /var/lib/apt/lists/*; \
     apt-get clean
@@ -84,7 +84,7 @@ RUN set -eux; \
     sudo apt-get autoremove -y cmake zlib1g-dev \
         # We keep g++ on GPU images, because uninstalling removes CUDA Devel tooling
         $(if [ "$BASE_IMAGE" = "ubuntu:focal" ]; then  \
-          echo g++  \
+          echo g++;  \
         fi;)
 
 # Either install kubectl or remove wget
@@ -94,9 +94,9 @@ RUN set -eux; \
         sudo touch /etc/apt/sources.list.d/kubernetes.list; \
         echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list; \
         sudo apt-get update; \
-        sudo apt-get install kubectl \
+        sudo apt-get install kubectl; \
     else  \
-      sudo apt-get autoremove -y wget \
+      sudo apt-get autoremove -y wget; \
     fi;)
 
 # clean

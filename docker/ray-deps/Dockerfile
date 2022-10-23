@@ -27,10 +27,10 @@ RUN set -eux; \
         "azure-mgmt-compute==23.1.0" \
         "azure-mgmt-network==19.0.0" \
         "azure-mgmt-resource==20.0.0" \
-        "msrestazure==0.6.4"  \
+        "msrestazure==0.6.4";  \
     fi;); \
     $(if [ $($PYTHON -c "import sys; print(sys.version_info.minor)") != 6 ] && [ "$AUTOSCALER" = "autoscaler" ]; then  \
-      echo "kopf"  \
+      echo "kopf";  \
     fi;)
 RUN set -eux; \
     $PIP uninstall ray -y; \
