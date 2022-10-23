@@ -81,6 +81,11 @@ for IMAGE in "ray-ml"; do
   fi
 
   cp "$WHEEL" "docker/$IMAGE/$(basename "$WHEEL")"
+  if [ "$IMAGE" == "ray-ml" ]; then
+    cp "python/requirements.txt" "docker/$IMAGE/"
+    cp "python/requirements/ml/*" "docker/$IMAGE/"
+  fi
+
   if [ "$OUTPUT_SHA" == "YES" ]; then
     IMAGE_SHA=$(docker build $BUILD_ARGS -q -t rayproject/$IMAGE:$BASE_IMAGE_TAG docker/$IMAGE)
     echo "rayproject/$IMAGE:nightly$BASE_IMAGE_TAG SHA:$IMAGE_SHA"
@@ -88,6 +93,9 @@ for IMAGE in "ray-ml"; do
     docker build $BUILD_ARGS -t rayproject/$IMAGE:$BASE_IMAGE_TAG docker/$IMAGE
   fi
   rm "docker/$IMAGE/$(basename "$WHEEL")"
+  if [ "$IMAGE" == "ray-ml" ]; then
+      rm "docker/$IMAGE/requirements*"
+    fi
   echo "<================================================="
 done
 
