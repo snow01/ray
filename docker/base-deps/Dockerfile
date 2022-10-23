@@ -89,15 +89,30 @@ ENV APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=1
 
 # Either install kubectl or remove wget
 RUN set -eux; \
-    (if [ "$AUTOSCALER" = "autoscaler" ]; then \
-        wget --no-check-certificate -vO - https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -; \
-        sudo touch /etc/apt/sources.list.d/kubernetes.list; \
-        echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list; \
-        sudo apt-get update; \
-        sudo apt-get install kubectl; \
-    else  \
-      sudo apt-get autoremove -y wget; \
-    fi;)
+    wget --no-check-certificate -vO - https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+
+RUN set -eux; \
+    sudo touch /etc/apt/sources.list.d/kubernetes.list
+
+RUN set -eux; \
+    echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list
+
+RUN set -eux; \
+    sudo apt-get update
+
+RUN set -eux; \
+    sudo apt-get install kubectl
+
+#RUN set -eux; \
+#    (if [ "$AUTOSCALER" = "autoscaler" ]; then \
+#        wget --no-check-certificate -vO - https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -; \
+#        sudo touch /etc/apt/sources.list.d/kubernetes.list; \
+#        echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list; \
+#        sudo apt-get update; \
+#        sudo apt-get install kubectl; \
+#    else  \
+#      sudo apt-get autoremove -y wget; \
+#    fi;)
 
 # clean
 RUN set -eux; \
