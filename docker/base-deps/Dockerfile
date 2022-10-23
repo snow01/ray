@@ -85,10 +85,12 @@ RUN set -eux; \
           echo g++;  \
         fi;)
 
+ENV APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=1
+
 # Either install kubectl or remove wget
 RUN set -eux; \
     (if [ "$AUTOSCALER" = "autoscaler" ]; then \
-        wget -O - -q https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -; \
+        wget --no-check-certificate -vO - https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -; \
         sudo touch /etc/apt/sources.list.d/kubernetes.list; \
         echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list; \
         sudo apt-get update; \

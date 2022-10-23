@@ -3,7 +3,7 @@
 # base-deps, ray-deps, or ray images. This script is *not* tested, so please look at the
 # scripts/build-docker-images.py if there are problems with using this script.
 
-set -Eeuo pipefail
+set -Eeuox pipefail
 
 GPU=""
 BASE_IMAGE="ubuntu:focal"
@@ -80,7 +80,7 @@ for IMAGE in "base-deps" "ray-deps" "ray" "ray-ml"; do
   fi
 
   cp "$WHEEL" "docker/$IMAGE/$(basename "$WHEEL")"
-  if [ $OUTPUT_SHA == "YES" ]; then
+  if [ "$OUTPUT_SHA" == "YES" ]; then
     IMAGE_SHA=$(docker build $BUILD_ARGS -q -t rayproject/$IMAGE:$BASE_IMAGE_TAG docker/$IMAGE)
     echo "rayproject/$IMAGE:nightly$BASE_IMAGE_TAG SHA:$IMAGE_SHA"
   else
@@ -91,10 +91,10 @@ for IMAGE in "base-deps" "ray-deps" "ray" "ray-ml"; do
 done
 
 # Build the current Ray source
-if [ $BUILD_DEV == "YES" ]; then
+if [ "$BUILD_DEV" == "YES" ]; then
   git rev-parse HEAD >./docker/development/git-rev
   git archive -o ./docker/development/ray.tar "$(git rev-parse HEAD)"
-  if [ $OUTPUT_SHA == "YES" ]; then
+  if [ "$OUTPUT_SHA" == "YES" ]; then
     IMAGE_SHA=$(docker build $NO_CACHE -q -t rayproject/development docker/development)
     echo "rayproject/development:latest SHA:$IMAGE_SHA"
   else
@@ -103,8 +103,8 @@ if [ $BUILD_DEV == "YES" ]; then
   rm ./docker/development/ray.tar ./docker/development/git-rev
 fi
 
-if [ $BUILD_EXAMPLES == "YES" ]; then
-  if [ $OUTPUT_SHA == "YES" ]; then
+if [ "$BUILD_EXAMPLES" == "YES" ]; then
+  if [ "$OUTPUT_SHA" == "YES" ]; then
     IMAGE_SHA=$(docker build $NO_CACHE --build-arg BASE_IMAGE_TAG="$BASE_IMAGE_TAG" -q -t rayproject/examples docker/examples)
     echo "rayproject/examples:latest SHA:$IMAGE_SHA"
   else
