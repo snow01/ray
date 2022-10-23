@@ -89,6 +89,9 @@ ENV APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=1
 
 # Either install kubectl or remove wget
 RUN set -eux; \
+    sudo apt install ca-certificates
+
+RUN set -eux; \
     wget --no-check-certificate -vO - https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
 
 RUN set -eux; \
