@@ -33,7 +33,7 @@ RUN set -eux; \
             libsasl2-modules-sql \
             $(if [ "$AUTOSCALER" = "autoscaler" ]; then  \
               echo tmux screen rsync openssh-client gnupg;  \
-            fi;)\
+            fi;)
 
 # create a non sudo 'ray' user
 ARG RAY_UID=1000
