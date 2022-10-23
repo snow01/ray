@@ -2,13 +2,13 @@ ARG BASE_IMAGE_TAG="nightly"
 FROM rayproject/ray:$BASE_IMAGE_TAG
 
 # We have to uninstall wrapt this way for Tensorflow compatibility
-COPY requirements.txt ./
-COPY requirements_dl.txt ./
-COPY requirements_ml_docker.txt ./
-COPY requirements_rllib.txt ./
-COPY requirements_tune.txt ./
-COPY requirements_train.txt ./
-COPY requirements_upstream.txt ./
+COPY requirements/requirements.txt ./
+COPY requirements/requirements_dl.txt ./
+COPY requirements/requirements_ml_docker.txt ./
+COPY requirements/requirements_rllib.txt ./
+COPY requirements/requirements_tune.txt ./
+COPY requirements/requirements_train.txt ./
+COPY requirements/requirements_upstream.txt ./
 
 RUN sudo apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/3bf863cc.pub
 RUN sudo apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64/7fa2af80.pub
