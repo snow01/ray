@@ -6,10 +6,9 @@
 set -x
 
 GPU=""
-BASE_IMAGE_TAG="nightly"
 BASE_IMAGE="ubuntu:focal"
 WHEEL_URL="https://s3-us-west-2.amazonaws.com/ray-wheels/latest/ray-3.0.0.dev0-cp37-cp37m-manylinux2014_x86_64.whl"
-PYTHON_VERSION="3.7.7"
+PYTHON_VERSION="3.8"
 
 while [[ $# -gt 0 ]]; do
   key="$1"
@@ -59,19 +58,20 @@ while [[ $# -gt 0 ]]; do
 done
 
 BASE_IMAGE_TAG="nightly-$PYTHON_VERSION$GPU"
-WHEEL_DIR=$(mktemp -d)
-wget --quiet "$WHEEL_URL" -P "$WHEEL_DIR"
-WHEEL="$WHEEL_DIR/$(basename "$WHEEL_DIR"/*.whl)"
+#WHEEL_DIR=$(mktemp -d)
+#wget --quiet "$WHEEL_URL" -P "$WHEEL_DIR"
+#WHEEL="$WHEEL_DIR/$(basename "$WHEEL_DIR"/*.whl)"
+WHEEL=".whl/ray-3.0.0.dev0-cp38-cp38-manylinux2014_x86_64.whl"
 # Build base-deps, ray-deps, and ray.
 for IMAGE in "base-deps" "ray-deps" "ray" "ray-ml"; do
   # BASE_IMAGE arg doesn't matter for any except except base-deps
   #--build-arg GPU="$GPU"
-  BUILD_ARGS="$NO_CACHE --build-arg WHEEL_PATH=$(basename "$WHEEL") --build-arg PYTHON_VERSION=$PYTHON_VERSION"
+  BUILD_ARGS="$NO_CACHE"
 
   if [ "$IMAGE" == "base-deps" ]; then
-    BUILD_ARGS="$BUILD_ARGS --build-arg BASE_IMAGE=$BASE_IMAGE"
-  elif [ "$IMAGE" == "base-deps" ]; then
-    BUILD_ARGS="$BUILD_ARGS --build-arg BASE_IMAGE_TAG=$BASE_IMAGE_TAG"
+    BUILD_ARGS="$BUILD_ARGS --build-arg BASE_IMAGE=$BASE_IMAGE --build-arg PYTHON_VERSION=$PYTHON_VERSION"
+  elif [ "$IMAGE" != "base-deps" ]; then
+    BUILD_ARGS="$BUILD_ARGS --build-arg BASE_IMAGE_TAG=$BASE_IMAGE_TAG --build-arg WHEEL_PATH=$(basename "$WHEEL")"
   fi
 
   cp "$WHEEL" "docker/$IMAGE/$(basename "$WHEEL")"
@@ -106,4 +106,4 @@ if [ $BUILD_EXAMPLES ]; then
   fi
 fi
 
-rm -rf "$WHEEL_DIR"
+#rm -rf "$WHEEL_DIR"
