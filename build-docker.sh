@@ -16,6 +16,7 @@ OUTPUT_SHA=""
 BUILD_DEV=""
 BUILD_EXAMPLES=""
 WHEEL_BUILD="YES"
+NO_CACHE=""
 
 while [[ $# -gt 0 ]]; do
   key="$1"
