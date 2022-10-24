@@ -6,12 +6,16 @@
 set -Eeuox pipefail
 
 GPU=""
+WHEEL=""
 BASE_IMAGE="ubuntu:focal"
-WHEEL_URL="https://s3-us-west-2.amazonaws.com/ray-wheels/latest/ray-3.0.0.dev0-cp37-cp37m-manylinux2014_x86_64.whl"
-PYTHON_VERSION="3.8"
+WHEEL_TYPE="LOCAL"
+WHEEL_URL="https://s3-us-west-2.amazonaws.com/ray-wheels/latest/ray-3.0.0.dev0-cp38-cp38-manylinux2014_x86_64.whl"
+PY_VERSION="cp38"
+PYTHON_VERSION_LONG="3.8"
 OUTPUT_SHA=""
 BUILD_DEV=""
 BUILD_EXAMPLES=""
+WHEEL_BUILD="YES"
 
 while [[ $# -gt 0 ]]; do
   key="$1"
@@ -41,16 +45,23 @@ while [[ $# -gt 0 ]]; do
     OUTPUT_SHA=YES
     ;;
   --wheel-to-use)
-    # Which wheel to use. This defaults to the latest nightly on python 3.7
-    echo "not implemented, just hardcode me :'("
-    exit 1
+    # Which wheel to use: LOCAL, REMOTE
+    shift
+    WHEEL_TYPE=$1
+    ;;
+  --wheel-url)
+    # wheel url to use for remote wheel
+    shift
+    WHEEL_URL=$1
     ;;
   --python-version)
-    # Python version to install. e.g. 3.7.7.
-    # Changing python versions may require a different wheel.
-    # If not provided defaults to 3.7.7
+    # Python version to install. possible values: cp36, cp37, cp38, cp39, cp310
     shift
-    PYTHON_VERSION=$1
+    PY_VERSION=$1
+    ;;
+  --no-wheel-build)
+    shift
+    WHEEL_BUILD=""
     ;;
   *)
     echo "Usage: build-docker.sh [ --gpu ] [ --base-image ] [ --no-cache-build ] [ --shas-only ] [ --build-development-image ] [ --build-examples ] [ --wheel-to-use ] [ --python-version ]"
@@ -60,11 +71,29 @@ while [[ $# -gt 0 ]]; do
   shift
 done
 
-BASE_IMAGE_TAG="nightly-$PYTHON_VERSION$GPU"
-#WHEEL_DIR=$(mktemp -d)
-#wget --quiet "$WHEEL_URL" -P "$WHEEL_DIR"
-#WHEEL="$WHEEL_DIR/$(basename "$WHEEL_DIR"/*.whl)"
-WHEEL=".whl/ray-3.0.0.dev0-cp38-cp38-manylinux2014_x86_64.whl"
+# TODO:
+#   convert python version to numeric version
+#   if wheel url based build - validate python version matches
+#   if local wheel - validate wheel exists
+
+
+if [ "$WHEEL_BUILD" == "YES" ]; then
+  docker run -e RAY_INSTALL_JAVA=1 -e TRAVIS_COMMIT="$(git log --format="%H" -n 1)" --rm -w /ray -v "$(pwd):/ray" \
+    -ti quay.io/pypa/manylinux2014_x86_64 /ray/python/build-wheel-manylinux2014.sh -p $PY_VERSION
+fi
+
+
+BASE_IMAGE_TAG="nightly-$PY_VERSION$GPU"
+
+#TODO: provide wheel url / location as arg
+if [ "$WHEEL_TYPE" == "LOCAL" ]; then
+  WHEEL=".whl/ray-3.0.0.dev0-cp38-cp38-manylinux2014_x86_64.whl"
+else
+  WHEEL_DIR=$(mktemp -d)
+  wget --quiet "$WHEEL_URL" -P "$WHEEL_DIR"
+  WHEEL="$WHEEL_DIR/$(basename "$WHEEL_DIR"/*.whl)"
+fi
+
 # Build base-deps, ray-deps, ray, and ray-ml.
 for IMAGE in "base-deps" "ray-deps" "ray" "ray-ml"; do
   echo "=================================================>"
@@ -74,7 +103,7 @@ for IMAGE in "base-deps" "ray-deps" "ray" "ray-ml"; do
   BUILD_ARGS="$NO_CACHE"
 
   if [ "$IMAGE" == "base-deps" ]; then
-    BUILD_ARGS="$BUILD_ARGS --build-arg BASE_IMAGE=$BASE_IMAGE --build-arg PYTHON_VERSION=$PYTHON_VERSION"
+    BUILD_ARGS="$BUILD_ARGS --build-arg BASE_IMAGE=$BASE_IMAGE --build-arg PYTHON_VERSION=$PYTHON_VERSION_LONG"
   else
     BUILD_ARGS="$BUILD_ARGS --build-arg BASE_IMAGE_TAG=$BASE_IMAGE_TAG --build-arg WHEEL_PATH=$(basename "$WHEEL")"
   fi
