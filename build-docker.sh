@@ -96,8 +96,8 @@ else
 fi
 
 # Build base-deps, ray-deps, ray, and ray-ml.
-# "base-deps" "ray-deps" "ray-ml"
-for IMAGE in "ray" ; do
+# "base-deps" "ray-deps"
+for IMAGE in "ray" "ray-ml" ; do
   echo "=================================================>"
   echo "==== BUILDING rayproject/$IMAGE:$BASE_IMAGE_TAG ===="
   # BASE_IMAGE arg doesn't matter for any except except base-deps
