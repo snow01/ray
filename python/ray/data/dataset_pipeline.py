@@ -562,6 +562,35 @@ class DatasetPipeline(Generic[T]):
             self._schema = self._peek().schema(fetch_if_missing)
         return self._schema
 
+    def _dataset_format(self) -> str:
+        """Determine the format of the dataset. Possible values are: "arrow",
+        "pandas", "simple".
+
+        This may block; if the schema is unknown, this will synchronously fetch
+        the schema for the first block.
+        """
+        # We need schema to properly validate, so synchronously
+        # fetch it if necessary.
+        schema = self.schema(fetch_if_missing=True)
+        if schema is None:
+            raise ValueError(
+                "Dataset is empty or cleared, can't determine the format of "
+                "the dataset."
+            )
+
+        try:
+            import pyarrow as pa
+
+            if isinstance(schema, pa.Schema):
+                return "arrow"
+        except ModuleNotFoundError:
+            pass
+        from ray.data._internal.pandas_block import PandasBlockSchema
+
+        if isinstance(schema, PandasBlockSchema):
+            return "pandas"
+        return "simple"
+
     def count(self) -> int:
         """Count the number of records in the dataset pipeline.
 
